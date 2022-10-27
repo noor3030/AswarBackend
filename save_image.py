@@ -10,4 +10,4 @@ async def save_image(image: UploadFile, request: Request) -> str:
     async with aiofiles.open(out_file_path, 'wb') as out_file:
         content = await image.read()
         await out_file.write(content)
-    return f"{request.url._url}/{out_file_path}"
+    return f"{request.base_url}{out_file_path}"

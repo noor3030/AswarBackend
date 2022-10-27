@@ -24,7 +24,8 @@ def create_user(session: Session, user: User):
 def create_product(session: Session, product: Product) -> Product | None:
     session.add(product)
     session.commit()
-    return session.refresh(product)
+    session.refresh(product)
+    return product
 
 
 def read_products(session: Session, page: int, per_page: int = 25, is_expired: bool = True):

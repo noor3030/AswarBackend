@@ -13,7 +13,7 @@ from seed import init_seed
 
 app = FastAPI()
 
-engine = create_engine("sqlite:///database.db")
+engine = create_engine("sqlite:///database1.db")
 SQLModel.metadata.create_all(engine)
 
 app.mount("/images", StaticFiles(directory="images"), name="images")
@@ -42,7 +42,7 @@ class Pagination(BaseModel):
 def read_products(page: int, per_page: int = 25, is_expired: bool = True):
     session = Session(engine)
     return Pagination(
-        total=controller.get_products_count(session),
+        total=controller.get_products_count(session, is_expired),
         result=controller.read_products(session, page, per_page, is_expired)
     )
 
@@ -51,7 +51,7 @@ def read_products(page: int, per_page: int = 25, is_expired: bool = True):
 async def create_product(
         request: Request,
         image: UploadFile,
-        name: str= Form(None),
+        name: str = Form(None),
         creation_date: datetime = Form(),
         expiration_date: datetime = Form(),
 ):
