@@ -12,6 +12,7 @@ def init_seed(session: Session):
     admin_user_in_db = read_user_by_email(session, admin_user.email)
 
     if admin_user_in_db is None:
+        print("Seed")
         create_user(session, admin_user)
 
         products = [

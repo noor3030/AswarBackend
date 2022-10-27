@@ -30,16 +30,18 @@ def read_products(session: Session, page: int, per_page: int = 25, is_expired: b
     offset = (page - 1) * per_page
 
     if is_expired:
-        statement = select(Product) \
-            .filter(Product.expiration_date > datetime.now())
-
+        statement = select(Product).filter(Product.expiration_date < datetime.now())
     else:
-        statement = select(Product) \
-            .filter(Product.expiration_date < datetime.now())
-
+        statement = select(Product).filter(Product.expiration_date > datetime.now())
 
     return session.exec(statement.offset(offset).limit(per_page)).all()
 
 
-def get_products_count(session: Session):
-    return session.query(Product).count()
+def get_products_count(session: Session, is_expired: bool = True):
+    statement = session.query(Product)
+    if is_expired:
+        count = statement.filter(Product.expiration_date < datetime.now()).count()
+    else:
+        count = statement.filter(Product.expiration_date > datetime.now()).count()
+
+    return count

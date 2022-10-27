@@ -37,7 +37,7 @@ def read_products(page: int, per_page: int = 25, is_expired: bool = True):
     session = Session(engine)
     return Pagination(
         total=controller.get_products_count(session),
-        result=controller.read_products(session, page, per_page)
+        result=controller.read_products(session, page, per_page,is_expired)
     )
 
 
@@ -50,3 +50,6 @@ def read_user(id: str):
 def main():
     with Session(engine) as session:
         init_seed(session)
+
+
+main()
