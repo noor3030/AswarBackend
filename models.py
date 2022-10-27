@@ -20,7 +20,6 @@ class Product(SQLModel, table=True):
         )
     )
     image_url: str
-    user_id: str
 
 
 class User(SQLModel, table=True):
