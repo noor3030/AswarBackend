@@ -1,0 +1,6 @@
+sqlmodel~=0.0.8
+fastapi~=0.85.1
+passlib~=1.7.4
+pydantic~=1.10.2
+starlette~=0.20.4
+aiofiles~=22.1.0
