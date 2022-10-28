@@ -23,7 +23,8 @@ app.mount("/images", StaticFiles(directory="images"), name="images")
 origins = [
     "http://localhost",
     "http://localhost:8080",
-    "http://localhost:8081"
+    "http://localhost:8081",
+    "https://aswar.vercel.app"
 ]
 
 app.add_middleware(
