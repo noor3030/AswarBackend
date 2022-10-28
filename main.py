@@ -1,20 +1,22 @@
 from datetime import datetime
 
-from fastapi import FastAPI, UploadFile, Form, Request
+from fastapi import FastAPI, UploadFile, Form, Request, Depends
 from pydantic import BaseModel
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import Session
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
+import auth_api as auth
 import controller as controller
 import models as models
+from auth import get_admin_user
+from db import engine
 from save_image import save_image
 from seed import init_seed
 
 app = FastAPI()
 
-engine = create_engine("sqlite:///database1.db")
-SQLModel.metadata.create_all(engine)
+app.include_router(auth.router)
 
 app.mount("/images", StaticFiles(directory="images"), name="images")
 
@@ -38,8 +40,12 @@ class Pagination(BaseModel):
     result: list[models.Product]
 
 
-@app.get("/products", response_model=Pagination, tags=["product"])
-def read_products(page: int, per_page: int = 25, is_expired: bool = True):
+@app.get("/products", response_model=Pagination, tags=["product"], dependencies=[Depends(get_admin_user)])
+def read_products(
+        page: int,
+        per_page: int = 25,
+        is_expired: bool = True,
+):
     session = Session(engine)
     return Pagination(
         total=controller.get_products_count(session, is_expired),
@@ -47,7 +53,7 @@ def read_products(page: int, per_page: int = 25, is_expired: bool = True):
     )
 
 
-@app.post("/products", response_model=models.Product | None, tags=["product"])
+@app.post("/products", response_model=models.Product | None, tags=["product"], dependencies=[Depends(get_admin_user)])
 async def create_product(
         request: Request,
         image: UploadFile,
@@ -68,7 +74,7 @@ async def create_product(
     return controller.create_product(session, product)
 
 
-@app.get("/users/{id}", response_model=models.User, tags=["user"])
+@app.get("/users/{id}", response_model=models.User, tags=["user"], dependencies=[Depends(get_admin_user)])
 def read_user(id: str):
     session = Session(engine)
     return controller.read_user_by_id(session, id)
